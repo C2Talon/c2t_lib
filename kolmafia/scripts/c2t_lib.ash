@@ -5,8 +5,8 @@
 
 
 //assert
-void c2t_assert(boolean val,string str) if (!val) abort(str);
-void c2t_assert(boolean val) assert(val,"assertion failed");
+void c2t_assert(boolean val);
+void c2t_assert(boolean val,string str);
 
 //whitelist a player to a clan
 //-player must be complete player name
@@ -56,6 +56,14 @@ boolean c2t_enteredCombat(string str);
   below is the implementation of the above declarations
 =======================================================*/
 
+
+//assert
+void c2t_assert(boolean val) {
+	c2t_assert(val,"assertion failed");
+}
+void c2t_assert(boolean val,string str) {
+	if (!val) abort(str);
+}
 
 //internal whitelist functions //purposely not declared above to try to not confuse
 buffer _c2t_whitelist(string player,int level) {
