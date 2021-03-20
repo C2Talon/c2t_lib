@@ -25,8 +25,10 @@ boolean c2t_joinClan(int id);
 
 //returns whether a free vote monster is now or not
 boolean c2t_isVoterNow();
-//returns odds of sausage goblin next turn; value of 1 is 100% chance
+//returns odds of sausage goblin next turn; value of 1 is highest
 float c2t_sausageGoblinOdds();
+//returns whether the next fight can be a guaranteed kramco goblin or not
+boolean c2t_isSausageGoblinNow();
 
 //set choiceAdventure#
 void c2t_setChoice(int adv,int choice);
@@ -39,6 +41,8 @@ item c2t_priority(item it1,item it2,item it3,item it4,item it5);
 item c2t_priority(item it1,item it2,item it3,item it4);
 item c2t_priority(item it1,item it2,item it3);
 item c2t_priority(item it1,item it2);
+//should handle a mafia-limited number of items with input of $items[item1,item2,...]
+item c2t_priority(boolean[item] ite);
 
 //drops hardcore
 void c2t_dropHardcore();
@@ -82,7 +86,7 @@ boolean c2t_whitelist(string player,int level) {
 }
 boolean c2t_whitelist(string player,int level,boolean show) {
 	string temppage = _c2t_whitelist(player,level);
-	if (temppage.contains_text(player+" added to whitelist.")) {
+	if (temppage.contains_text(" added to whitelist.")) {
 		if (show) print(player+" successfully added","blue");
 		return true;
 	}
@@ -125,6 +129,17 @@ float c2t_sausageGoblinOdds() {
 	return (to_float(total_turns_played()-lastSausageTurn+1)/(5.0 + to_float(sausageFights) * 3.0 + to_float(multiplier) * to_float(multiplier) * to_float(multiplier)));
 }
 
+boolean c2t_isSausageGoblinNow() {
+	int sausageFights = get_property('_sausageFights').to_int();
+	int multiplier = max(0, sausageFights - 5);
+	int lastSausageTurn = get_property('_lastSausageMonsterTurn').to_int();
+
+	if (sausageFights == 0)
+		return true;
+
+	return (max(0,4+sausageFights*3+multiplier*multiplier*multiplier-total_turns_played()+lastSausageTurn) == 0);
+}
+
 void c2t_setChoice(int adv,int choice) {
 	set_property(`choiceAdventure{adv}`,`{choice}`);
 }
@@ -161,6 +176,12 @@ item c2t_priority(item it1,item it2) {
 		return it2;
 	else
 		return $item[none];
+}
+item c2t_priority(boolean[item] ite) {
+	foreach x in ite
+		if (available_amount(x) > 0)
+			return x;
+	return $item[none];
 }
 
 
