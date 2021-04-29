@@ -198,7 +198,7 @@ boolean c2t_wishFight(monster mon) {
 	int id = $item[pocket wish].to_int();
 
 	visit_url("inv_use.php?pwd="+my_hash()+"&which=3&whichitem="+id,false,true);
-	visit_url("choice.php?pwd&whichchoice=1267&option=1&wish=to fight a "+mon,true,true);
+	visit_url("choice.php?pwd&whichchoice=1267&option=1&wish=to fight a "+mon.manuel_name,true,true);
 	return c2t_enteredCombat(visit_url("main.php",false));
 }
 
