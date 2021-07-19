@@ -210,6 +210,10 @@ void c2t_dropHardcore() {
 boolean c2t_wishFight(monster mon) {
 	if (item_amount($item[pocket wish]) == 0)
 		return false;
+	if (my_hp() == 0) {
+		print("Starting a wish fight at zero health will be an instant loss","red");
+		return false;
+	}
 
 	int id = $item[pocket wish].to_int();
 
