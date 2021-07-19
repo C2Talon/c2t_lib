@@ -43,6 +43,7 @@ item c2t_priority(item it1,item it2,item it3);
 item c2t_priority(item it1,item it2);
 //should handle a mafia-limited number of items with input of $items[item1,item2,...]
 item c2t_priority(boolean[item] ite);
+familiar c2t_priority(boolean[familiar] fam);
 
 //drops hardcore
 void c2t_dropHardcore();
@@ -54,6 +55,15 @@ boolean c2t_wishFight(monster mon);
 //returns whether buf signals combat
 boolean c2t_enteredCombat(buffer buf);
 boolean c2t_enteredCombat(string str);
+
+//returns weight of familiar with current buffs, etc
+int c2t_famWeight(familiar fam);
+
+//returns max number of copies pocket professor can do with current buffs, etc.
+int c2t_maxProfCopy();
+int c2t_maxProfCopy(int weight);
+//shows max number of copies with meteor showered effect
+int c2t_maxProfCopy(boolean withMeteor);
 
 
 /*=======================================================
@@ -183,6 +193,12 @@ item c2t_priority(boolean[item] ite) {
 			return x;
 	return $item[none];
 }
+familiar c2t_priority(boolean[familiar] fam) {
+	foreach x in fam
+		if (have_familiar(x))
+			return x;
+	return $familiar[none];
+}
 
 
 //TODO add return whether it works or not?
@@ -213,4 +229,19 @@ boolean c2t_enteredCombat(string str) {
 	return mat.find();
 }
 
+//get total weight of a given familiar with current buffs, etc
+int c2t_famWeight(familiar fam) {
+	return familiar_weight(fam)+weight_adjustment();
+}
+
+//find out max number of pocket professor copies can be done
+int c2t_maxProfCopy(int weight) {
+	return floor(square_root(weight+0.001))+1+(have_equipped($item[Pocket Professor memory chip])?2:0);
+}
+int c2t_maxProfCopy() {
+	return c2t_maxProfCopy(c2t_famWeight($familiar[pocket professor]));
+}
+int c2t_maxProfCopy(boolean withMeteor) {
+	return c2t_maxProfCopy(c2t_famWeight($familiar[pocket professor])+(withMeteor?20:0));
+}
 
