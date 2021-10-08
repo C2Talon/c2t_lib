@@ -65,6 +65,37 @@ int c2t_maxProfCopy(int weight);
 //shows max number of copies with meteor showered effect
 int c2t_maxProfCopy(boolean withMeteor);
 
+//---
+// BALLS builder
+// functions here are used to translate things like skill use into BALLS macro form
+// all functions with "macro" argument return the same as the non-"macro" one, but with "macro" prepended to it
+
+//combine/append
+string c2t_bb(string macro,string str);
+//just in case
+string c2t_bb(string macro);
+//finite repetition of a skill
+string c2t_bb(int num,skill ski);
+string c2t_bb(string macro,int num,skill ski);
+//single skill
+string c2t_bb(skill ski);
+string c2t_bb(string macro,skill ski);
+//combat item(s)
+string c2t_bb(item it1);
+string c2t_bb(string macro,item it1);
+//funkslinging
+string c2t_bb(item it1,item it2);
+string c2t_bb(string macro,item it1,item it2);
+//if
+string c2t_bbIf(string condition,string str);
+string c2t_bbIf(string macro,string condition,string str);
+//while
+string c2t_bbWhile(string condition,string str);
+string c2t_bbWhile(string macro,string condition,string str);
+//submit the macro in combat
+string c2t_bbSubmit(string macro);
+
+
 
 /*=======================================================
   below is the implementation of the above declarations
@@ -247,5 +278,75 @@ int c2t_maxProfCopy() {
 }
 int c2t_maxProfCopy(boolean withMeteor) {
 	return c2t_maxProfCopy(c2t_famWeight($familiar[pocket professor])+(withMeteor?20:0));
+}
+
+
+//---
+// build/use BALLS macros
+
+//combine/append
+string c2t_bb(string m,string s) {
+	return m + s;
+}
+//just in case
+string c2t_bb(string m) {
+	return m;
+}
+
+//finite repetition of a skill
+string c2t_bb(int num,skill ski) {
+	string out;
+	if (have_skill(ski))
+		for i from 1 to num
+			out += `skill {ski.to_int()};`;
+	return out;
+}
+string c2t_bb(string m,int num,skill ski) {
+	return m + c2t_bb(num,ski);
+}
+//single skill
+string c2t_bb(skill ski) {
+	return c2t_bb(1,ski);
+}
+string c2t_bb(string m,skill ski) {
+	return m + c2t_bb(1,ski);
+}
+
+//combat item(s)
+string c2t_bb(item it1) {
+	return `item {it1.to_int()};`;
+}
+string c2t_bb(string m,item it1) {
+	return m + c2t_bb(it1);
+}
+//funkslinging
+string c2t_bb(item it1,item it2) {
+	return `item {it1.to_int()},{it2.to_int()};`;
+}
+string c2t_bb(string m,item it1,item it2) {
+	return m + c2t_bb(it1,it2);
+}
+
+//if
+string c2t_bbIf(string c,string s) {
+	return `if {c};{s}endif;`;
+}
+string c2t_bbIf(string m,string c,string s) {
+	return m + c2t_bbIf(c,s);
+}
+
+//while
+string c2t_bbWhile(string c,string s) {
+	return `while {c};{s}endwhile;`;
+}
+string c2t_bbWhile(string m,string c,string s) {
+	return m + c2t_bbWhile(c,s);
+}
+
+//submit
+string c2t_bbSubmit(string m) {
+	if (get_property("c2t_bb_printMacro").to_boolean())
+		print(`c2t_bb macro: {m}`);
+	return visit_url("fight.php?action=macro&macrotext="+m,true,false);
 }
 
