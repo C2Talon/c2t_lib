@@ -314,14 +314,14 @@ string c2t_bb(string m,skill ski) {
 
 //combat item(s)
 string c2t_bb(item it1) {
-	return `item {it1.to_int()};`;
+	return `use {it1.to_int()};`;
 }
 string c2t_bb(string m,item it1) {
 	return m + c2t_bb(it1);
 }
 //funkslinging
 string c2t_bb(item it1,item it2) {
-	return `item {it1.to_int()},{it2.to_int()};`;
+	return `use {it1.to_int()},{it2.to_int()};`;
 }
 string c2t_bb(string m,item it1,item it2) {
 	return m + c2t_bb(it1,it2);
