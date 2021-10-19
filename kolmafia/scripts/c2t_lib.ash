@@ -347,6 +347,7 @@ string c2t_bbWhile(string m,string c,string s) {
 string c2t_bbSubmit(string m) {
 	if (get_property("c2t_bb_printMacro").to_boolean())
 		print(`c2t_bb macro: {m}`);
-	return visit_url("fight.php?action=macro&macrotext="+m,true,false);
+	string out = visit_url("fight.php?action=macro&macrotext="+m,true,false);
+	return out;
 }
 
