@@ -43,7 +43,9 @@ item c2t_priority(item it1,item it2,item it3);
 item c2t_priority(item it1,item it2);
 //should handle a mafia-limited number of items with input of $items[item1,item2,...]
 item c2t_priority(boolean[item] ite);
+item c2t_priority(item[int] ite);
 familiar c2t_priority(boolean[familiar] fam);
+familiar c2t_priority(familiar[int] fam);
 
 //drops hardcore
 void c2t_dropHardcore();
@@ -224,8 +226,20 @@ item c2t_priority(boolean[item] ite) {
 			return x;
 	return $item[none];
 }
+item c2t_priority(item[int] ite) {
+	foreach i,x in ite
+		if (available_amount(x) > 0)
+			return x;
+	return $item[none];
+}
 familiar c2t_priority(boolean[familiar] fam) {
 	foreach x in fam
+		if (have_familiar(x))
+			return x;
+	return $familiar[none];
+}
+familiar c2t_priority(familiar[int] fam) {
+	foreach i,x in fam
 		if (have_familiar(x))
 			return x;
 	return $familiar[none];
