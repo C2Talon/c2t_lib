@@ -67,6 +67,11 @@ int c2t_maxProfCopy(int weight);
 //shows max number of copies with meteor showered effect
 int c2t_maxProfCopy(boolean withMeteor);
 
+//returns last string used in a maximize() call
+//n is one of the last 5 maximize calls, from 0 to 4, with 0 being most recent
+string c2t_lastMaximize();
+string c2t_lastMaximize(int n);
+
 //---
 // BALLS builder
 // functions here are used to translate things like skill use into BALLS macro form
@@ -169,7 +174,7 @@ float c2t_sausageGoblinOdds() {
 	int sausageFights = get_property('_sausageFights').to_int();
 	int multiplier = max(0, sausageFights - 5);
 	int lastSausageTurn = get_property('_lastSausageMonsterTurn').to_int();
-	return (to_float(total_turns_played()-lastSausageTurn+1)/(5.0 + to_float(sausageFights) * 3.0 + to_float(multiplier) * to_float(multiplier) * to_float(multiplier)));
+	return (to_float(total_turns_played()-lastSausageTurn+1)/(5.0 + to_float(sausageFights) * 3.0 + to_float(multiplier) ** 3));
 }
 
 boolean c2t_isSausageGoblinNow() {
@@ -294,6 +299,16 @@ int c2t_maxProfCopy(boolean withMeteor) {
 	return c2t_maxProfCopy(c2t_famWeight($familiar[pocket professor])+(withMeteor?20:0));
 }
 
+//returns last string used in a maximize() call
+//n is one of the last 5 maximize calls, from 0 to 4, with 0 being most recent
+string c2t_lastMaximize() {
+	return c2t_lastMaximize(0);
+}
+string c2t_lastMaximize(int n) {
+	if (n >= 0 && n <= 4)
+		return get_property("maximizerMRUList").split_string(";")[n];
+	return "";
+}
 
 //---
 // build/use BALLS macros
