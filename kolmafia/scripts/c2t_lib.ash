@@ -4,6 +4,9 @@
 //just a collection of functions shared between 2 or more scripts of mine
 
 
+boolean c2t_FIRST_MAX = true;//for c2t_minMaximize()
+
+
 //assert
 void c2t_assert(boolean val);
 void c2t_assert(boolean val,string str);
@@ -71,6 +74,18 @@ int c2t_maxProfCopy(boolean withMeteor);
 //n is one of the last 5 maximize calls, from 0 to 4, with 0 being most recent
 string c2t_lastMaximize();
 string c2t_lastMaximize(int n);
+
+//essentially a wrapper for maximize() meant to reduce the number of maximize calls in a script that exclusively uses maximize to equip gear
+//warning: do not use this if using methods outside of maximize() to equip gear, as this will not work as intended. Nor if you plan on using maximize to simulate gear loadouts in the same script
+//max is the maximizer string to pass onto maximize()
+//returns true only if the maximize call was successful; i.e. gear changed
+boolean c2t_minMaximize(string max);
+
+//breaks hippy stone and pledges allegiance to current clan or clanId if needed
+//returns true if successful
+//returns false if not able to pledge allegiance to a clan, leaving the player in a fail state I call pvp limbo: where the player can be attacked but not attack, and the pvp fight counter doesn't show on char pane
+boolean c2t_breakHippyStone();
+boolean c2t_breakHippyStone(int clanId);
 
 //---
 // BALLS builder
@@ -309,6 +324,44 @@ string c2t_lastMaximize(int n) {
 		return get_property("maximizerMRUList").split_string(";")[n];
 	return "";
 }
+
+//essentially a wrapper for maximize() meant to reduce the number of maximize calls in a script that exclusively uses maximize to equip gear
+//warning: do not use this if using methods outside of maximize() to equip gear, as this will not work as intended. Nor if you plan on using maximize to simulate gear loadouts in the same script
+//max is the maximizer string to pass onto maximize()
+//returns true only if the maximize call was successful; i.e. gear changed
+boolean c2t_minMaximize(string max) {
+	if (max != c2t_lastMaximize() || c2t_FIRST_MAX) {
+		c2t_FIRST_MAX = false;
+		return maximize(max,false);
+	}
+	return false;
+}
+
+
+//breaks hippy stone and pledges allegiance to current clan or clanId if needed
+//returns true if successful
+//returns false if not able to pledge allegiance to a clan, leaving the player in a fail state I call pvp limbo: where the player can be attacked but not attack, and the pvp fight counter doesn't show on char pane
+boolean c2t_breakHippyStone() {
+	return c2t_breakHippyStone(0);
+}
+boolean c2t_breakHippyStone(int clanId) {
+	if (hippy_stone_broken())
+		return true;
+
+	buffer buf = visit_url('peevpee.php?action=smashstone&confirm=on',true,true);
+	if (buf.contains_text('Pledge allegiance to ')) {
+		int oldClan = get_clan_id();
+		if (clanId.to_boolean())
+			c2t_joinClan(clanId);
+		buf = visit_url('peevpee.php?pwd&action=pledge',true,true);
+		if (clanId.to_boolean())
+			c2t_joinClan(oldClan);
+		if (!buf.contains_text('Allegiance pledged, commence fighting.'))
+			return false;
+	}
+	return true;
+}
+
 
 //---
 // build/use BALLS macros
