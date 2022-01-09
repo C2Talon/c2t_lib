@@ -271,16 +271,20 @@ void c2t_dropHardcore() {
 	visit_url('account.php?pwd&actions[]=unhardcore&action=Drop Hardcore&unhardcoreconfirm=1',true,false);
 }
 
-//TODO maybe allow direct from genie bottle?
+//enter combat with a wished-for monster
 boolean c2t_wishFight(monster mon) {
-	if (item_amount($item[pocket wish]) == 0)
+	int id;
+	if (item_amount($item[genie bottle]).to_boolean() && get_property("_genieWishesUsed").to_int() < 3)
+		id = $item[genie bottle].to_int();
+	else if (item_amount($item[pocket wish]).to_boolean())
+		id = $item[pocket wish].to_int();
+	else
 		return false;
+
 	if (my_hp() == 0) {
 		print("Starting a wish fight at zero health will be an instant loss","red");
 		return false;
 	}
-
-	int id = $item[pocket wish].to_int();
 
 	visit_url("inv_use.php?pwd="+my_hash()+"&which=3&whichitem="+id,false,true);
 	visit_url("choice.php?pwd&whichchoice=1267&option=1&wish=to fight a "+mon.manuel_name,true,true);
