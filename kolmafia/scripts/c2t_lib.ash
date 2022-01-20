@@ -33,6 +33,13 @@ float c2t_sausageGoblinOdds();
 //returns whether the next fight can be a guaranteed kramco goblin or not
 boolean c2t_isSausageGoblinNow();
 
+//returns whether cursed magnifying glass is charged enough for a wanderer, regardless of free or not
+boolean c2t_isVoidNow();
+//returns whether next void wanderer is free or not
+boolean c2t_isVoidFree();
+//returns true if void wander is free and now
+boolean c2t_isVoidFreeNow();
+
 //set choiceAdventure#
 void c2t_setChoice(int adv,int choice);
 
@@ -202,6 +209,14 @@ boolean c2t_isSausageGoblinNow() {
 
 	return (max(0,4+sausageFights*3+multiplier*multiplier*multiplier-total_turns_played()+lastSausageTurn) == 0);
 }
+
+boolean c2t_isVoidNow() {
+	return get_property("cursedMagnifyingGlassCount").to_int() >= 13;
+}
+boolean c2t_isVoidFree() {
+	return get_property("_voidFreeFights").to_int() < 5;
+}
+boolean c2t_isVoidFreeNow() return c2t_isVoidNow() && c2t_isVoidFree();
 
 void c2t_setChoice(int adv,int choice) {
 	set_property(`choiceAdventure{adv}`,`{choice}`);
