@@ -39,6 +39,7 @@ boolean c2t_isVoidNow();
 boolean c2t_isVoidFree();
 //returns true if void wander is free and now
 boolean c2t_isVoidFreeNow();
+boolean c2t_isVoidNowFree();
 
 //set choiceAdventure#
 void c2t_setChoice(int adv,int choice);
@@ -217,6 +218,7 @@ boolean c2t_isVoidFree() {
 	return get_property("_voidFreeFights").to_int() < 5;
 }
 boolean c2t_isVoidFreeNow() return c2t_isVoidNow() && c2t_isVoidFree();
+boolean c2t_isVoidNowFree() return c2t_isVoidFreeNow();
 
 void c2t_setChoice(int adv,int choice) {
 	set_property(`choiceAdventure{adv}`,`{choice}`);
@@ -415,6 +417,8 @@ string c2t_bb(string m,skill ski) {
 
 //combat item(s)
 string c2t_bb(item it1) {
+	if (item_amount(it1) == 0)
+		return "";
 	return `use {it1.to_int()};`;
 }
 string c2t_bb(string m,item it1) {
@@ -422,6 +426,10 @@ string c2t_bb(string m,item it1) {
 }
 //funkslinging
 string c2t_bb(item it1,item it2) {
+	if (item_amount(it1) == 0)
+		return c2t_bb(it2);
+	if (item_amount(it2) == 0)
+		return c2t_bb(it1);
 	return `use {it1.to_int()},{it2.to_int()};`;
 }
 string c2t_bb(string m,item it1,item it2) {
