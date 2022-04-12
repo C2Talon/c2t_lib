@@ -290,6 +290,11 @@ void c2t_dropHardcore() {
 
 //enter combat with a wished-for monster
 boolean c2t_wishFight(monster mon) {
+	if (get_property("_genieFightsUsed").to_int() >= 3) {
+		print("Out of genie fights.");
+		return false;
+	}
+
 	int id;
 	if (item_amount($item[genie bottle]).to_boolean() && get_property("_genieWishesUsed").to_int() < 3)
 		id = $item[genie bottle].to_int();
@@ -399,9 +404,8 @@ string c2t_bb(string m) {
 //finite repetition of a skill
 string c2t_bb(int num,skill ski) {
 	string out;
-	if (have_skill(ski))
-		for i from 1 to num
-			out += `skill {ski.to_int()};`;
+	for i from 1 to num
+		out += `if hasskill {ski.to_int()};skill {ski.to_int()};endif;`;
 	return out;
 }
 string c2t_bb(string m,int num,skill ski) {
