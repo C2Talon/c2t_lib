@@ -71,6 +71,7 @@ boolean c2t_enteredCombat(string str);
 
 //returns weight of familiar with current buffs, etc
 int c2t_famWeight(familiar fam);
+int c2t_famWeight() return c2t_famWeight(my_familiar());
 
 //returns max number of copies pocket professor can do with current buffs, etc.
 int c2t_maxProfCopy();
@@ -326,7 +327,7 @@ boolean c2t_enteredCombat(string str) {
 
 //get total weight of a given familiar with current buffs, etc
 int c2t_famWeight(familiar fam) {
-	return familiar_weight(fam)+weight_adjustment();
+	return (have_effect($effect[fidoxene]) > 0 ? 20 : familiar_weight(fam)) + weight_adjustment();
 }
 
 //find out max number of pocket professor copies can be done
