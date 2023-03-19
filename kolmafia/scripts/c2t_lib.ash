@@ -405,7 +405,7 @@ string c2t_bb(string m) {
 //finite repetition of a skill
 string c2t_bb(int num,skill ski) {
 	string out;
-	for i from 1 to num
+	for (int i = 0;num > i;i++)
 		out += `if hasskill {ski.to_int()};skill {ski.to_int()};endif;`;
 	return out;
 }
