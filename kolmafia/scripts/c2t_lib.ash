@@ -93,6 +93,11 @@ boolean c2t_minMaximize(string max);
 //returns the pilcrow-ized string of an item for use in maximizer strings to avoid complications with semi-colons in names and such
 string c2t_pilcrow(item ite);
 
+//mostly a convenience for troubleshooting to make up for readability problems with using pilcrow-ized items in strings
+//reads a string containing pilcrow-ized items
+//returns a map of the name of the item keyed to the item id
+string [int] c2t_pilcrowDecode(string s);
+
 //breaks hippy stone and pledges allegiance to current clan or clanId if needed
 //returns true if successful
 //returns false if not able to pledge allegiance to a clan, leaving the player in a fail state I call pvp limbo: where the player can be attacked but not attack, and the pvp fight counter doesn't show on char pane
@@ -372,6 +377,19 @@ string c2t_pilcrow(item ite) {
 	return `\u00b6{ite.to_int()}`;
 }
 
+//mostly a convenience for troubleshooting to make up for readability problems with using pilcrow-ized items in strings
+//reads a string containing pilcrow-ized items
+//returns a map of the name of all the pilcrow-ized items keyed to the item id
+string [int] c2t_pilcrowDecode(string s) {
+	matcher m = create_matcher("\u00b6(\\d+)",s);
+	string [int] out;
+	int x;
+	while (m.find()) {
+		x = m.group(1).to_int();
+		out[x] = x.to_item().name;
+	}
+	return out;
+}
 
 //breaks hippy stone and pledges allegiance to current clan or clanId if needed
 //returns true if successful
