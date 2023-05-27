@@ -95,8 +95,8 @@ string c2t_pilcrow(item ite);
 
 //mostly a convenience for troubleshooting to make up for readability problems with using pilcrow-ized items in strings
 //reads a string containing pilcrow-ized items
-//returns a map of the name of the item keyed to the item id
-string [int] c2t_pilcrowDecode(string s);
+//returns a map of items that were pilcrow-ized, keyed to item id
+item [int] c2t_pilcrowDecode(string s);
 
 //breaks hippy stone and pledges allegiance to current clan or clanId if needed
 //returns true if successful
@@ -379,14 +379,14 @@ string c2t_pilcrow(item ite) {
 
 //mostly a convenience for troubleshooting to make up for readability problems with using pilcrow-ized items in strings
 //reads a string containing pilcrow-ized items
-//returns a map of the name of all the pilcrow-ized items keyed to the item id
-string [int] c2t_pilcrowDecode(string s) {
+//returns a map of items that were pilcrow-ized, keyed to item id
+item [int] c2t_pilcrowDecode(string s) {
 	matcher m = create_matcher("\u00b6(\\d+)",s);
-	string [int] out;
+	item [int] out;
 	int x;
 	while (m.find()) {
 		x = m.group(1).to_int();
-		out[x] = x.to_item().name;
+		out[x] = x.to_item();
 	}
 	return out;
 }
