@@ -80,7 +80,7 @@ int c2t_maxProfCopy(int weight);
 int c2t_maxProfCopy(boolean withMeteor);
 
 //returns last string used in a maximize() call
-//n is one of the last 5 maximize calls, from 0 to 4, with 0 being most recent
+//n is one of the last few maximize calls, from 0 to 1 less than maximizerMRUSize (property default is 5), with 0 being most recent
 string c2t_lastMaximize();
 string c2t_lastMaximize(int n);
 
@@ -350,12 +350,13 @@ int c2t_maxProfCopy(boolean withMeteor) {
 }
 
 //returns last string used in a maximize() call
-//n is one of the last 5 maximize calls, from 0 to 4, with 0 being most recent
+//n is one of the last few maximize calls, from 0 to 1 less than maximizerMRUSize (property default is 5), with 0 being most recent
 string c2t_lastMaximize() {
 	return c2t_lastMaximize(0);
 }
 string c2t_lastMaximize(int n) {
-	if (n >= 0 && n <= 4)
+	int size = get_property("maximizerMRUSize").to_int();
+	if (n >= 0 && n < size)
 		return get_property("maximizerMRUList").split_string(";")[n];
 	return "";
 }
