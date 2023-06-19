@@ -132,7 +132,9 @@ string c2t_bbIf(string macro,string condition,string str);
 string c2t_bbWhile(string condition,string str);
 string c2t_bbWhile(string macro,string condition,string str);
 //submit the macro in combat
+//if partial is true, visit_url() will be used for submitting the macro allowing another macro to be submitted for the same combat later; defaults to false if omitted
 string c2t_bbSubmit(string macro);
+string c2t_bbSubmit(string macro,boolean partial);
 
 
 
@@ -486,9 +488,13 @@ string c2t_bbWhile(string m,string c,string s) {
 
 //submit
 string c2t_bbSubmit(string m) {
+	return c2t_bbSubmit(m,false);
+}
+string c2t_bbSubmit(string m,boolean partial) {
 	if (get_property("c2t_bb_printMacro").to_boolean())
 		print(`c2t_bb macro: {m}`);
-	string out = visit_url("fight.php?action=macro&macrotext="+m,true,false);
-	return out;
+	return partial
+		? visit_url("fight.php?action=macro&macrotext="+m,true,false)
+		: run_combat(m);
 }
 
