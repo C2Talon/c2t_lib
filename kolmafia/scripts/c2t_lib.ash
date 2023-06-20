@@ -212,6 +212,11 @@ float c2t_sausageGoblinOdds() {
 }
 
 boolean c2t_isSausageGoblinNow() {
+	if (available_amount($item[kramco sausage-o-matic&trade;]) == 0
+		&& available_amount($item[replica kramco sausage-o-matic&trade;]) == 0)
+	{
+		return false;
+	}
 	int sausageFights = get_property('_sausageFights').to_int();
 	int multiplier = max(0, sausageFights - 5);
 	int lastSausageTurn = get_property('_lastSausageMonsterTurn').to_int();
