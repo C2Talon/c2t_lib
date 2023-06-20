@@ -193,11 +193,11 @@ boolean c2t_joinClan(string name) {
 }
 
 boolean c2t_isVoterNow() {
-	if(get_property("lastVoteMonsterTurn").to_int() >= total_turns_played())
+	if (available_amount($item[&quot;I voted!&quot; sticker]) == 0)
+		return false;
+	if (get_property("lastVoteMonsterTurn").to_int() >= total_turns_played())
 		return false;
 	if ((total_turns_played() % 11) != 1)
-		return false;
-	if (available_amount($item[&quot;I voted!&quot; sticker]) == 0)
 		return false;
 	if (get_property("_voteFreeFights").to_int() >= 3)
 		return false;
@@ -205,6 +205,12 @@ boolean c2t_isVoterNow() {
 }
 
 float c2t_sausageGoblinOdds() {
+	if (available_amount($item[kramco sausage-o-matic&trade;]) == 0
+		&& available_amount($item[replica kramco sausage-o-matic&trade;]) == 0)
+	{
+		return 0.0;
+	}
+
 	int sausageFights = get_property('_sausageFights').to_int();
 	int multiplier = max(0, sausageFights - 5);
 	int lastSausageTurn = get_property('_lastSausageMonsterTurn').to_int();
@@ -217,6 +223,7 @@ boolean c2t_isSausageGoblinNow() {
 	{
 		return false;
 	}
+
 	int sausageFights = get_property('_sausageFights').to_int();
 	int multiplier = max(0, sausageFights - 5);
 	int lastSausageTurn = get_property('_lastSausageMonsterTurn').to_int();
@@ -224,13 +231,17 @@ boolean c2t_isSausageGoblinNow() {
 	if (sausageFights == 0)
 		return true;
 
-	return (max(0,4+sausageFights*3+multiplier*multiplier*multiplier-total_turns_played()+lastSausageTurn) == 0);
+	return (max(0,4+sausageFights*3+multiplier**3-total_turns_played()+lastSausageTurn) == 0);
 }
 
 boolean c2t_isVoidNow() {
+	if (available_amount($item[cursed magnifying glass]) == 0)
+		return false;
 	return get_property("cursedMagnifyingGlassCount").to_int() >= 13;
 }
 boolean c2t_isVoidFree() {
+	if (available_amount($item[cursed magnifying glass]) == 0)
+		return false;
 	return get_property("_voidFreeFights").to_int() < 5;
 }
 boolean c2t_isVoidFreeNow() return c2t_isVoidNow() && c2t_isVoidFree();
@@ -312,9 +323,13 @@ boolean c2t_wishFight(monster mon) {
 	}
 
 	int id;
-	if (item_amount($item[genie bottle]).to_boolean() && get_property("_genieWishesUsed").to_int() < 3)
+	if ((item_amount($item[genie bottle]) > 0
+			|| item_amount($item[replica genie bottle]) > 0)
+		&& get_property("_genieWishesUsed").to_int() < 3)
+	{
 		id = $item[genie bottle].to_int();
-	else if (item_amount($item[pocket wish]).to_boolean())
+	}
+	else if (item_amount($item[pocket wish]) > 0)
 		id = $item[pocket wish].to_int();
 	else
 		return false;
