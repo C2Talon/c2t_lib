@@ -104,6 +104,21 @@ item [int] c2t_pilcrowDecode(string s);
 boolean c2t_breakHippyStone();
 boolean c2t_breakHippyStone(int clanId);
 
+//wrapper for adv1(), but aborts if a turn is used on that adventure
+//returns the result of adv1()
+boolean c2t_freeAdv(location loc);
+boolean c2t_freeAdv(location loc,int num);
+boolean c2t_freeAdv(location loc,int num,string macro);
+
+//some skills require something equipped to cast the skill. this is to do that
+//this will equip the specified item, cast the specified skill from it, then re-equip the item removed from step 1
+//returns the results of use_skill()
+boolean c2t_equipCast(skill ski,item ite);
+boolean c2t_equipCast(item ite,skill ski);
+boolean c2t_equipCast(int times,skill ski,item ite);
+boolean c2t_equipCast(int times,item ite,skill ski);
+
+
 //---
 // BALLS builder
 // functions here are used to translate things like skill use into BALLS macro form
@@ -437,6 +452,56 @@ boolean c2t_breakHippyStone(int clanId) {
 	}
 	return true;
 }
+
+boolean c2t_freeAdv(location loc) {
+	return c2t_freeAdv(loc,-1,"");
+}
+boolean c2t_freeAdv(location loc,int num) {
+	return c2t_freeAdv(loc,num,"");
+}
+boolean c2t_freeAdv(location loc,int num,string macro) {
+	int start = my_turncount();
+	boolean result = adv1(loc,num,macro);
+	if (my_turncount() > start)
+		abort(`c2t_freeAdv(): turn used at {loc}`);
+	return result;
+}
+
+boolean c2t_equipCast(skill ski,item ite) {
+	return c2t_equipCast(1,ite,ski);
+}
+boolean c2t_equipCast(item ite,skill ski) {
+	return c2t_equipCast(1,ite,ski);
+}
+boolean c2t_equipCast(int times,skill ski,item ite) {
+	return c2t_equipCast(times,ite,ski);
+}
+boolean c2t_equipCast(int times,item ite,skill ski) {
+	//adapated from c2t_cast
+	item last = $item[none];
+	slot slo = ite.to_slot();
+	boolean out = false;
+
+	if (slo == $slot[none]) {
+		print(`c2t_equipCast: "{ite}" is not something that can be equipped`,"red");
+		return false;
+	}
+
+	//swap in item
+	if (!have_equipped(ite)) {
+		last = equipped_item(slo);
+		equip(slo,ite);
+	}
+
+	out = use_skill(times,ski);
+
+	//reequip previous item
+	if (last != $item[none])
+		equip(slo,ite);
+
+	return out;
+}
+
 
 
 //---
