@@ -497,7 +497,7 @@ boolean c2t_equipCast(int times,item ite,skill ski) {
 
 	//reequip previous item
 	if (last != $item[none])
-		equip(slo,ite);
+		equip(slo,last);
 
 	return out;
 }
