@@ -41,6 +41,9 @@ boolean c2t_isVoidFree();
 boolean c2t_isVoidFreeNow();
 boolean c2t_isVoidNowFree();
 
+//returns whether in specific choice adventure or not
+boolean c2t_inChoice(int choice_id);
+
 //set choiceAdventure#
 void c2t_setChoice(int adv,int choice);
 
@@ -140,6 +143,9 @@ string c2t_bb(string macro,item it1);
 //funkslinging
 string c2t_bb(item it1,item it2);
 string c2t_bb(string macro,item it1,item it2);
+//daily limited skills
+string c2t_bbLimited(skill ski);
+string c2t_bbLimited(string macro,skill ski);
 //if
 string c2t_bbIf(string condition,string str);
 string c2t_bbIf(string macro,string condition,string str);
@@ -261,6 +267,12 @@ boolean c2t_isVoidFree() {
 }
 boolean c2t_isVoidFreeNow() return c2t_isVoidNow() && c2t_isVoidFree();
 boolean c2t_isVoidNowFree() return c2t_isVoidFreeNow();
+
+boolean c2t_inChoice(int choice_id) {
+	if (handling_choice() && last_choice() == choice_id)
+		return true;
+	return false;
+}
 
 void c2t_setChoice(int adv,int choice) {
 	set_property(`choiceAdventure{adv}`,`{choice}`);
@@ -553,6 +565,14 @@ string c2t_bb(item it1,item it2) {
 }
 string c2t_bb(string m,item it1,item it2) {
 	return m + c2t_bb(it1,it2);
+}
+
+//daily limited skills
+string c2t_bbLimited(skill ski) {
+	return ski.dailylimit > 0 ? c2t_bb(ski) : "";
+}
+string c2t_bbLimited(string m,skill ski) {
+	return m + c2t_bbLimited(ski);
 }
 
 //if
