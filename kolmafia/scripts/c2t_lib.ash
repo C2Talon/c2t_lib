@@ -47,6 +47,14 @@ boolean c2t_inChoice(int choice_id);
 //set choiceAdventure#
 void c2t_setChoice(int adv,int choice);
 
+//increment property
+//adds `n` to, and stores new value to, the value contained in property `prop`
+//omitting `n` increments the property by 1
+//returns int of property after incrementing it
+int c2t_incProperty(string prop);
+int c2t_incProperty(string prop,int n);
+int c2t_incProperty(int n,string prop);
+
 //priority
 //returns first item that is present
 //returns $item[none] if none present
@@ -120,6 +128,13 @@ boolean c2t_equipCast(skill ski,item ite);
 boolean c2t_equipCast(item ite,skill ski);
 boolean c2t_equipCast(int times,skill ski,item ite);
 boolean c2t_equipCast(int times,item ite,skill ski);
+
+//buys things from mall with buy() outside of run, or with buy_using_storage() in run
+//returns the number of items purchased
+int c2t_buy(item ite,int qty,int maxPrice);
+
+//uses item and returns resulting page
+buffer c2t_pageUse(item ite);
 
 
 //---
@@ -275,6 +290,16 @@ void c2t_setChoice(int adv,int choice) {
 	set_property(`choiceAdventure{adv}`,`{choice}`);
 }
 
+int c2t_incProperty(string prop) {
+	return c2t_incProperty(prop,1);
+}
+int c2t_incProperty(int n,string prop) {
+	return c2t_incProperty(prop,n);
+}
+int c2t_incProperty(string prop,int n) {
+	set_property(prop,get_property(prop).to_int()+n);
+	return get_property(prop).to_int();
+}
 
 item c2t_priority(item it1,item it2,item it3,item it4,item it5,item it6) {
 	if (available_amount(it1) > 0)
@@ -381,7 +406,7 @@ boolean c2t_enteredCombat(string str) {
 
 //get total weight of a given familiar with current buffs, etc
 int c2t_famWeight(familiar fam) {
-	return max(have_effect($effect[fidoxene]) > 0 ? 20 : 0,familiar_weight(fam)) + weight_adjustment();
+	return familiar_weight(fam) + weight_adjustment() + fam.soup_weight + (fam.feasted ? 10 : 0);
 }
 
 //find out max number of pocket professor copies can be done
@@ -511,6 +536,17 @@ boolean c2t_equipCast(int times,item ite,skill ski) {
 	return out;
 }
 
+int c2t_buy(item ite,int qty,int maxPrice) {
+	if (can_interact())
+		return buy(ite,qty,maxPrice);
+	return buy_using_storage(ite,qty,maxPrice);
+}
+
+buffer c2t_pageUse(item ite) {
+	if (available_amount(ite) == 0)
+		return "".to_buffer();
+	return visit_url(`inv_use.php?pwd={my_hash()}&which=3&whichitem={ite.id}`,false,true);
+}
 
 
 //---
