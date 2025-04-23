@@ -512,9 +512,9 @@ boolean c2t_equipCast(int times,skill ski,item ite) {
 }
 boolean c2t_equipCast(int times,item ite,skill ski) {
 	//adapated from c2t_cast
-	item last = $item[none];
+	item last,main;
 	slot slo = ite.to_slot();
-	boolean out = false;
+	boolean out;
 
 	if (slo == $slot[none]) {
 		print(`c2t_equipCast: "{ite}" is not something that can be equipped`,"red");
@@ -523,14 +523,31 @@ boolean c2t_equipCast(int times,item ite,skill ski) {
 
 	//swap in item
 	if (!have_equipped(ite)) {
-		last = equipped_item(slo);
+		//edge cases with hands
+		if ($slots[weapon,off-hand] contains slo)
+		{
+			main = equipped_item($slot[weapon]);
+			last = equipped_item($slot[off-hand]);
+			//unequip mainhand weapon if it blocks equipping offhand
+			if (slo == $slot[off-hand]
+				&& weapon_hands(main) > 1)
+			{
+				equip($slot[weapon],$item[none]);
+			}
+		}
+		else
+			last = equipped_item(slo);
 		equip(slo,ite);
 	}
 
 	out = use_skill(times,ski);
 
 	//reequip previous item
-	if (last != $item[none])
+	if (main != $item[none]) {
+		equip($slot[weapon],main);
+		equip($slot[off-hand],last);
+	}
+	else if (last != $item[none])
 		equip(slo,last);
 
 	return out;
@@ -543,9 +560,10 @@ int c2t_buy(item ite,int qty,int maxPrice) {
 }
 
 buffer c2t_pageUse(item ite) {
-	if (available_amount(ite) == 0)
-		return "".to_buffer();
-	return visit_url(`inv_use.php?pwd={my_hash()}&which=3&whichitem={ite.id}`,false,true);
+	buffer out;
+	if (available_amount(ite) != 0)
+		out = visit_url(`inv_use.php?pwd={my_hash()}&which=3&whichitem={ite.id}`,false,true);
+	return out;
 }
 
 
