@@ -70,7 +70,8 @@ familiar c2t_priority(boolean[familiar] fam);
 familiar c2t_priority(familiar[int] fam);
 
 //drops hardcore
-void c2t_dropHardcore();
+//returns true if no longer in hardcore
+boolean c2t_dropHardcore();
 
 //uses a pocket wish to enter combat with mon
 //returns whether combat was entered or not
@@ -358,10 +359,11 @@ familiar c2t_priority(familiar[int] fam) {
 	return $familiar[none];
 }
 
-
-//TODO add return whether it works or not?
-void c2t_dropHardcore() {
-	visit_url('account.php?pwd&actions[]=unhardcore&action=Drop Hardcore&unhardcoreconfirm=1',true,false);
+//drop hardcore
+boolean c2t_dropHardcore() {
+	if (!in_hardcore())
+		return true;
+	return visit_url('account.php?pwd&actions[]=unhardcore&action=Drop Hardcore&unhardcoreconfirm=1',true,false).contains_text("<td>You are no longer in Hardcore mode.</td>");
 }
 
 //enter combat with a wished-for monster
